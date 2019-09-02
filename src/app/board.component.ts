@@ -1,6 +1,13 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  OnInit,
+  HostListener
+} from '@angular/core';
 import { Settings } from './constants';
 import { BoardService } from './board.service';
+import { Piece } from './piece.component';
 
 @Component({
   selector: 'game-board',
@@ -15,6 +22,22 @@ export class BoardComponent implements OnInit {
   ctx: CanvasRenderingContext2D;
   playing = false;
   board: number[][];
+  piece: Piece;
+  moves = {
+    ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
+    ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
+    ArrowDown: (piece: Piece) => ({ ...piece, y: piece.y + 1 })
+  };
+
+  @HostListener('window:keydown', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    const newPiece = this.moves[event.key](this.piece);
+    if (newPiece) {
+      this.piece.move(newPiece.x, newPiece.y);
+    } else if (event.key === 'ArrowUp') {
+      //this.piece.rotate();
+    }
+  }
 
   constructor(private boardService: BoardService) {}
 
@@ -23,8 +46,11 @@ export class BoardComponent implements OnInit {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.ctx.canvas.width = COLS * BLOCK_SIZE;
     this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+    this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
     this.board = this.boardService.getEmptyBoard();
     console.table(this.board);
+    this.piece = new Piece(this.ctx);
+    this.piece.draw(this.piece.color);
   }
 
   play() {
