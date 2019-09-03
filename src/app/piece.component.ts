@@ -1,3 +1,5 @@
+import { Settings, Tetromino } from './constants';
+
 export class Piece {
   x: number;
   y: number;
@@ -9,12 +11,10 @@ export class Piece {
   }
 
   spawn() {
-    this.shape = [
-      [0, 2, 0],
-      [0, 2, 0],
-      [2, 2, 0]
-    ];
-    this.color = 'blue';
+    const {COLORS, SHAPES} = Tetromino;
+    const typeId = this.randomizeTetrominoType(COLORS.length);
+    this.shape = SHAPES[typeId];
+    this.color = COLORS[typeId];
     this.x = 4;
     this.y = 0;
   }
@@ -36,5 +36,9 @@ export class Piece {
       this.y = p.y;
       this.shape = p.shape;
       this.draw();
+  }
+
+  randomizeTetrominoType(noOfTypes: number): number {
+    return Math.floor(Math.random() * noOfTypes);
   }
 }
