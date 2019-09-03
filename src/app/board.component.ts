@@ -31,12 +31,13 @@ export class BoardComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    const newPiece = this.moves[event.key](this.piece);
-    if (newPiece) {
+    if (this.moves[event.key]) {
       event.preventDefault();
+      const newPiece = this.moves[event.key](this.piece);      
       this.piece.move(newPiece.x, newPiece.y);
     } else if (event.key === 'ArrowUp') {
-      //this.piece.rotate();
+      this.piece.rotate();
+      this.piece.draw();
     }
   }
 

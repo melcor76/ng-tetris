@@ -11,7 +11,11 @@ export class Piece {
   }
 
   spawn() {
-    this.shape = [[0, 2, 0], [0, 2, 0], [2, 2, 0]];
+    this.shape = [
+      [0, 2, 0],
+      [0, 2, 0],
+      [2, 2, 0]
+    ];
     this.color = 'blue';
     this.x = 4;
     this.y = 0;
@@ -29,7 +33,7 @@ export class Piece {
     });
   }
 
-  move(newX: number, newY: number) { 
+  move(newX: number, newY: number) {
     if (this.valid(newX, newY)) {
       this.x = newX;
       this.y = newY;
@@ -37,19 +41,35 @@ export class Piece {
     }
   }
 
+  rotate() {
+    for (let y = 0; y < this.shape.length; ++y) {
+      for (let x = 0; x < y; ++x) {
+        [
+          this.shape[x][y], this.shape[y][x]
+        ] = [
+          this.shape[y][x], this.shape[x][y]
+        ];
+      }
+    }
+    this.shape.forEach(row => row.reverse());
+  }
+
   valid(newX: number, newY: number): boolean {
-    const {COLS, ROWS} = Settings;
+    const { COLS, ROWS } = Settings;
     const length = this.shape.length;
     for (let y = 0; y < length; y++) {
       for (let x = 0; x < length; x++) {
-        if (this.shape[y][x] > 0) {     
-          if (newX + x < 0) { // Stop left            
+        if (this.shape[y][x] > 0) {
+          if (newX + x < 0) {
+            // Stop left
             return false;
           }
-          if (newX + x >= COLS) { // Stop right            
+          if (newX + x >= COLS) {
+            // Stop right
             return false;
           }
-          if (newY + y >= ROWS) { // Stop at bottom            
+          if (newY + y >= ROWS) {
+            // Stop at bottom
             return false;
           }
         }
