@@ -1,5 +1,3 @@
-import { Settings } from './constants';
-
 export class Piece {
   x: number;
   y: number;
@@ -33,48 +31,10 @@ export class Piece {
     });
   }
 
-  move(newX: number, newY: number) {
-    if (this.valid(newX, newY)) {
-      this.x = newX;
-      this.y = newY;
+  move(p: Piece) {    
+      this.x = p.x;
+      this.y = p.y;
+      this.shape = p.shape;
       this.draw();
-    }
-  }
-
-  rotate() {
-    for (let y = 0; y < this.shape.length; ++y) {
-      for (let x = 0; x < y; ++x) {
-        [
-          this.shape[x][y], this.shape[y][x]
-        ] = [
-          this.shape[y][x], this.shape[x][y]
-        ];
-      }
-    }
-    this.shape.forEach(row => row.reverse());
-  }
-
-  valid(newX: number, newY: number): boolean {
-    const { COLS, ROWS } = Settings;
-    const length = this.shape.length;
-    for (let y = 0; y < length; y++) {
-      for (let x = 0; x < length; x++) {
-        if (this.shape[y][x] > 0) {
-          if (newX + x < 0) {
-            // Stop left
-            return false;
-          }
-          if (newX + x >= COLS) {
-            // Stop right
-            return false;
-          }
-          if (newY + y >= ROWS) {
-            // Stop at bottom
-            return false;
-          }
-        }
-      }
-    }
-    return true;
   }
 }
