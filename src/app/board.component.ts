@@ -33,6 +33,7 @@ export class BoardComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     const newPiece = this.moves[event.key](this.piece);
     if (newPiece) {
+      event.preventDefault();
       this.piece.move(newPiece.x, newPiece.y);
     } else if (event.key === 'ArrowUp') {
       //this.piece.rotate();
@@ -50,7 +51,7 @@ export class BoardComponent implements OnInit {
     this.board = this.boardService.getEmptyBoard();
     console.table(this.board);
     this.piece = new Piece(this.ctx);
-    this.piece.draw(this.piece.color);
+    this.piece.draw();
   }
 
   play() {

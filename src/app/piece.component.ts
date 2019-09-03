@@ -17,8 +17,9 @@ export class Piece {
     this.y = 0;
   }
 
-  draw(color: string) {
-    this.ctx.fillStyle = color;
+  draw() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.ctx.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
@@ -28,10 +29,9 @@ export class Piece {
     });
   }
 
-  move(newX: number, newY: number) {
-    this.draw(Settings.BOARD_COLOR);
+  move(newX: number, newY: number) {    
     this.x = newX;
     this.y = newY;
-    this.draw(this.color);
+    this.draw();
   }
 }
