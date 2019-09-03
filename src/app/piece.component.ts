@@ -29,9 +29,32 @@ export class Piece {
     });
   }
 
-  move(newX: number, newY: number) {    
-    this.x = newX;
-    this.y = newY;
-    this.draw();
+  move(newX: number, newY: number) { 
+    if (this.valid(newX, newY)) {
+      this.x = newX;
+      this.y = newY;
+      this.draw();
+    }
+  }
+
+  valid(newX: number, newY: number): boolean {
+    const {COLS, ROWS} = Settings;
+    const length = this.shape.length;
+    for (let y = 0; y < length; y++) {
+      for (let x = 0; x < length; x++) {
+        if (this.shape[y][x] > 0) {     
+          if (newX + x < 0) { // Stop left            
+            return false;
+          }
+          if (newX + x >= COLS) { // Stop right            
+            return false;
+          }
+          if (newY + y >= ROWS) { // Stop at bottom            
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 }
