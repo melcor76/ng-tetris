@@ -9,7 +9,8 @@ export class PieceService {
   valid(p: Piece): boolean {
     return p.shape.every((row, y) => {
       return row.every(
-        (value, x) => p.x + x >= 0 && p.x + x < COLS && p.y + y <= ROWS
+        (value, x) =>
+          value === 0 || (p.x + x >= 0 && p.x + x < COLS && p.y + y < ROWS)
       );
     });
   }
