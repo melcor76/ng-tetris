@@ -34,7 +34,6 @@ export class Piece {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;
-    this.draw();
   }
 
   randomizeTetrominoType(noOfTypes: number): number {

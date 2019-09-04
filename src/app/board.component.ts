@@ -3,7 +3,8 @@ import {
   ViewChild,
   ElementRef,
   OnInit,
-  HostListener
+  HostListener,
+  NgZone
 } from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS } from './constants';
 import { BoardService } from './board.service';
@@ -44,7 +45,8 @@ export class BoardComponent implements OnInit {
 
   constructor(
     private boardService: BoardService,
-    private pieceService: PieceService
+    private pieceService: PieceService,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -54,10 +56,15 @@ export class BoardComponent implements OnInit {
     this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
     this.board = this.boardService.getEmptyBoard();
     this.piece = new Piece(this.ctx);
-    this.piece.draw();
+    this.ngZone.runOutsideAngular(() => this.animate());
   }
 
   play() {
     this.playing = !this.playing;
+  }
+
+  animate() {
+    this.piece.draw();
+    requestAnimationFrame(this.animate.bind(this));
   }
 }
