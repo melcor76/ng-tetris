@@ -1,4 +1,4 @@
-import { Settings, Tetromino } from './constants';
+import { COLORS, SHAPES } from './constants';
 
 export class Piece {
   x: number;
@@ -11,7 +11,6 @@ export class Piece {
   }
 
   spawn() {
-    const {COLORS, SHAPES} = Tetromino;
     const typeId = this.randomizeTetrominoType(COLORS.length);
     this.shape = SHAPES[typeId];
     this.color = COLORS[typeId];
@@ -31,11 +30,11 @@ export class Piece {
     });
   }
 
-  move(p: Piece) {    
-      this.x = p.x;
-      this.y = p.y;
-      this.shape = p.shape;
-      this.draw();
+  move(p: Piece) {
+    this.x = p.x;
+    this.y = p.y;
+    this.shape = p.shape;
+    this.draw();
   }
 
   randomizeTetrominoType(noOfTypes: number): number {

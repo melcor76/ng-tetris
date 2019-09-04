@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Piece } from './piece.component';
-import { Settings } from './constants';
+import { COLS, ROWS } from './constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PieceService {
-
   valid(p: Piece): boolean {
-    const { COLS, ROWS } = Settings;
     const length = p.shape.length;
     for (let y = 0; y < length; y++) {
       for (let x = 0; x < length; x++) {
@@ -35,11 +33,7 @@ export class PieceService {
     let p: Piece = JSON.parse(JSON.stringify(piece));
     for (let y = 0; y < p.shape.length; ++y) {
       for (let x = 0; x < y; ++x) {
-        [
-          p.shape[x][y], p.shape[y][x]
-        ] = [
-          p.shape[y][x], p.shape[x][y]
-        ];
+        [p.shape[x][y], p.shape[y][x]] = [p.shape[y][x], p.shape[x][y]];
       }
     }
     p.shape.forEach(row => row.reverse());
