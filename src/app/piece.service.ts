@@ -7,26 +7,11 @@ import { COLS, ROWS } from './constants';
 })
 export class PieceService {
   valid(p: Piece): boolean {
-    const length = p.shape.length;
-    for (let y = 0; y < length; y++) {
-      for (let x = 0; x < length; x++) {
-        if (p.shape[y][x] > 0) {
-          if (p.x + x < 0) {
-            // Stop left
-            return false;
-          }
-          if (p.x + x >= COLS) {
-            // Stop right
-            return false;
-          }
-          if (p.y + y >= ROWS) {
-            // Stop at bottom
-            return false;
-          }
-        }
-      }
-    }
-    return true;
+    return p.shape.every((row, y) => {
+      return row.every(
+        (value, x) => p.x + x >= 0 && p.x + x < COLS && p.y + y <= ROWS
+      );
+    });
   }
 
   rotate(piece: Piece): Piece {
