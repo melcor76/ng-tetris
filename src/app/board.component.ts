@@ -7,15 +7,14 @@ import {
   NgZone
 } from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS } from './constants';
-import { BoardService } from './board.service';
 import { Piece } from './piece.component';
 import { PieceService } from './piece.service';
 
 @Component({
   selector: 'game-board',
   template: `
-    <canvas #board style="border: solid"></canvas>
-    <button (click)="play()">{{ playing ? 'Stop' : 'Play' }}</button>
+    <canvas #board class="game-board"></canvas>
+    <button (click)="play()" class="play-button">Play</button>
   `
 })
 export class BoardComponent implements OnInit {
@@ -25,6 +24,7 @@ export class BoardComponent implements OnInit {
   playing = false;
   board: number[][];
   piece: Piece;
+  requestId: number;
   moves = {
     ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
@@ -44,27 +44,37 @@ export class BoardComponent implements OnInit {
   }
 
   constructor(
-    private boardService: BoardService,
     private pieceService: PieceService,
     private ngZone: NgZone
   ) {}
 
   ngOnInit() {
+    this.initBoard();
+  }
+
+  initBoard() {
     this.ctx = this.canvas.nativeElement.getContext('2d');
+
+    // Calculate size of canvas from constants.
     this.ctx.canvas.width = COLS * BLOCK_SIZE;
     this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+
+    // Scale so we don't need to give size on every draw.
     this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
-    this.board = this.boardService.getEmptyBoard();
+  }
+
+  play() {
+    this.board = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
     this.ngZone.runOutsideAngular(() => this.animate());
   }
 
-  play() {
-    this.playing = !this.playing;
-  }
-
   animate() {
     this.piece.draw();
-    requestAnimationFrame(this.animate.bind(this));
+    this.requestId = requestAnimationFrame(this.animate.bind(this));
+  }
+
+  getEmptyBoard(): number[][] {
+    return Array(ROWS).fill(Array(COLS).fill(0));
   }
 }
