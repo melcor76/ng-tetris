@@ -25,6 +25,7 @@ export class BoardComponent implements OnInit {
   board: number[][];
   piece: Piece;
   requestId: number;
+  time = { start: 0, elapsed: 0, total: 2000};
   moves = {
     ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
@@ -66,12 +67,20 @@ export class BoardComponent implements OnInit {
   play() {
     this.board = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
-    this.ngZone.runOutsideAngular(() => this.animate());
+
+    this.time.start = performance.now();
+
+    requestAnimationFrame(this.animate.bind(this));
   }
 
-  animate() {
+  animate(now) {
+    this.time.elapsed = now - this.time.start;
+    if (this.time.elapsed > 500) {
+      this.piece.y++;
+      this.time.start = now;
+    }
     this.piece.draw();
-    this.requestId = requestAnimationFrame(this.animate.bind(this));
+    requestAnimationFrame(this.animate.bind(this));
   }
 
   getEmptyBoard(): number[][] {
