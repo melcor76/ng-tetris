@@ -18,7 +18,7 @@ export class Piece implements IPiece {
   }
 
   spawn() {
-    const typeId = this.randomizeTetrominoType(COLORS.length);
+    const typeId = this.randomizeTetrominoType(COLORS.length - 1);
     this.shape = SHAPES[typeId];
     this.color = COLORS[typeId];
     this.x = 4;
@@ -26,7 +26,7 @@ export class Piece implements IPiece {
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);  
     this.ctx.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -42,6 +42,7 @@ export class Piece implements IPiece {
   }
 
   randomizeTetrominoType(noOfTypes: number): number {
-    return Math.floor(Math.random() * noOfTypes);
+    return Math.floor(Math.random() * noOfTypes + 1);
   }
 }
+ 

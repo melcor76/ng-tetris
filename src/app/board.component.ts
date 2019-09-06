@@ -6,7 +6,7 @@ import {
   HostListener,
   NgZone
 } from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS } from './constants';
+import { COLS, BLOCK_SIZE, ROWS, COLORS } from './constants';
 import { Piece, IPiece } from './piece.component';
 import { PieceService } from './piece.service';
 
@@ -86,14 +86,26 @@ export class BoardComponent implements OnInit {
       }  
     }
     this.piece.draw();
+    this.drawBoard();
     requestAnimationFrame(this.animate.bind(this));
   }
 
-  freeze() {
+  freeze() {  
     this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
-        if (value > 0) {                   
-          this.board[y + this.piece.y][x + this.piece.x] = value;          
+        if (value > 0) {                     
+          this.board[y + this.piece.y][x + this.piece.x] = value;
+        }
+      });
+    });
+  }
+
+  drawBoard() {
+    this.board.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = COLORS[value];
+          this.ctx.fillRect(x, y, 1, 1);
         }
       });
     });
