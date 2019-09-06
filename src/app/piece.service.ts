@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Piece } from './piece.component';
+import { Piece, IPiece } from './piece.component';
 import { COLS, ROWS } from './constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PieceService {
-  valid(p: Piece): boolean {
+  valid(p: IPiece): boolean {
     return p.shape.every((row, y) => {
       return row.every(
         (value, x) =>
@@ -15,7 +15,7 @@ export class PieceService {
     });
   }
 
-  rotate(piece: Piece): Piece {
+  rotate(piece: IPiece): Piece {
     let p: Piece = JSON.parse(JSON.stringify(piece));
     for (let y = 0; y < p.shape.length; ++y) {
       for (let x = 0; x < y; ++x) {

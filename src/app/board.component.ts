@@ -7,7 +7,7 @@ import {
   NgZone
 } from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS } from './constants';
-import { Piece } from './piece.component';
+import { Piece, IPiece } from './piece.component';
 import { PieceService } from './piece.service';
 
 @Component({
@@ -37,7 +37,7 @@ export class BoardComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (this.moves[event.key]) {
       event.preventDefault();
-      let p: Piece = this.moves[event.key](this.piece);
+      let p: IPiece = this.moves[event.key](this.piece);
       if (this.pieceService.valid(p)) {
         this.piece.move(p);
       }
@@ -50,7 +50,7 @@ export class BoardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.initBoard();
+    this.initBoard();    
   }
 
   initBoard() {
@@ -65,7 +65,7 @@ export class BoardComponent implements OnInit {
   }
 
   play() {
-    this.board = this.getEmptyBoard();
+    this.board = this.getEmptyBoard();    
     this.piece = new Piece(this.ctx);
 
     this.time.start = performance.now();
@@ -76,14 +76,30 @@ export class BoardComponent implements OnInit {
   animate(now) {
     this.time.elapsed = now - this.time.start;
     if (this.time.elapsed > 500) {
-      this.piece.y++;
       this.time.start = now;
+      let p: IPiece = this.moves['ArrowDown'](this.piece);
+      if (this.pieceService.valid(p)) {        
+        this.piece.move(p);
+      } else {        
+        this.freeze();
+        this.piece = new Piece(this.ctx);
+      }  
     }
     this.piece.draw();
     requestAnimationFrame(this.animate.bind(this));
   }
 
+  freeze() {
+    this.piece.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {                   
+          this.board[y + this.piece.y][x + this.piece.x] = value;          
+        }
+      });
+    });
+  }
+
   getEmptyBoard(): number[][] {
-    return Array(ROWS).fill(Array(COLS).fill(0));
+    return Array.from({length: ROWS}, e => Array(COLS).fill(0));  
   }
 }

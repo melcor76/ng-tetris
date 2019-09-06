@@ -1,6 +1,13 @@
 import { COLORS, SHAPES } from './constants';
 
-export class Piece {
+export interface IPiece {
+  x: number;
+  y: number;
+  color: string;
+  shape: number[][]
+}
+
+export class Piece implements IPiece {
   x: number;
   y: number;
   color: string;
@@ -28,7 +35,7 @@ export class Piece {
     });
   }
 
-  move(p: Piece) {
+  move(p: IPiece) {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;
