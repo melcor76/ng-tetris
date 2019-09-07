@@ -6,11 +6,15 @@ import { COLS, ROWS } from './constants';
   providedIn: 'root'
 })
 export class PieceService {
-  valid(p: IPiece): boolean {
+  valid(p: IPiece, board: number[][]): boolean {
     return p.shape.every((row, y) => {
       return row.every(
         (value, x) =>
-          value === 0 || (p.x + x >= 0 && p.x + x < COLS && p.y + y < ROWS)
+          value === 0 ||
+          (p.x + x >= 0 &&
+            p.x + x < COLS &&
+            p.y + y < ROWS &&
+            board[p.y + y][p.x + x] === 0)
       );
     });
   }

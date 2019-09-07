@@ -25,7 +25,7 @@ export class BoardComponent implements OnInit {
   board: number[][];
   piece: Piece;
   requestId: number;
-  time = { start: 0, elapsed: 0, total: 2000};
+  time = { start: 0, elapsed: 0, level: 1000 };
   moves = {
     ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
@@ -38,19 +38,16 @@ export class BoardComponent implements OnInit {
     if (this.moves[event.key]) {
       event.preventDefault();
       let p: IPiece = this.moves[event.key](this.piece);
-      if (this.pieceService.valid(p)) {
+      if (this.pieceService.valid(p, this.board)) {
         this.piece.move(p);
       }
     }
   }
 
-  constructor(
-    private pieceService: PieceService,
-    private ngZone: NgZone
-  ) {}
+  constructor(private pieceService: PieceService, private ngZone: NgZone) {}
 
   ngOnInit() {
-    this.initBoard();    
+    this.initBoard();
   }
 
   initBoard() {
@@ -65,35 +62,58 @@ export class BoardComponent implements OnInit {
   }
 
   play() {
-    this.board = this.getEmptyBoard();    
+    this.board = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
 
     this.time.start = performance.now();
 
-    requestAnimationFrame(this.animate.bind(this));
+    if (this.requestId) {
+      cancelAnimationFrame(this.requestId);
+    }
+
+    this.ngZone.runOutsideAngular(() => this.animate());
   }
 
-  animate(now) {
+  animate(now = 0) {
     this.time.elapsed = now - this.time.start;
-    if (this.time.elapsed > 500) {
+    if (this.time.elapsed > this.time.level) {
       this.time.start = now;
-      let p: IPiece = this.moves['ArrowDown'](this.piece);
-      if (this.pieceService.valid(p)) {        
-        this.piece.move(p);
-      } else {        
-        this.freeze();
-        this.piece = new Piece(this.ctx);
-      }  
+      this.drop();
     }
+    this.draw();
+    this.requestId = requestAnimationFrame(this.animate.bind(this));
+  }
+
+  draw() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.piece.draw();
     this.drawBoard();
-    requestAnimationFrame(this.animate.bind(this));
   }
 
-  freeze() {  
+  drop() {
+    let p: IPiece = this.moves['ArrowDown'](this.piece);
+    if (this.pieceService.valid(p, this.board)) {
+      this.piece.move(p);
+    } else {
+      this.freeze();
+      this.clearLines();
+      this.piece = new Piece(this.ctx);
+    }
+  }
+
+  clearLines() {
+    this.board.forEach((row, y) => {
+      if (row.every(value => value !== 0)) {
+        this.board.splice(y, 1);
+        this.board.unshift(Array(COLS).fill(0));
+      }
+    });
+  }
+
+  freeze() {
     this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
-        if (value > 0) {                     
+        if (value > 0) {
           this.board[y + this.piece.y][x + this.piece.x] = value;
         }
       });
@@ -112,6 +132,6 @@ export class BoardComponent implements OnInit {
   }
 
   getEmptyBoard(): number[][] {
-    return Array.from({length: ROWS}, e => Array(COLS).fill(0));  
+    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   }
 }

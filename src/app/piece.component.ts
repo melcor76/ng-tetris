@@ -4,7 +4,7 @@ export interface IPiece {
   x: number;
   y: number;
   color: string;
-  shape: number[][]
+  shape: number[][];
 }
 
 export class Piece implements IPiece {
@@ -26,7 +26,6 @@ export class Piece implements IPiece {
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);  
     this.ctx.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -45,4 +44,3 @@ export class Piece implements IPiece {
     return Math.floor(Math.random() * noOfTypes + 1);
   }
 }
- 
