@@ -22,3 +22,12 @@ export const SHAPES = [
   [[0, 6, 0], [6, 6, 6], [0, 0, 0]],
   [[7, 7, 0], [0, 7, 7], [0, 0, 0]]
 ];
+
+export class Points {
+  static readonly SINGLE = 100;
+  static readonly DOUBLE = 300;
+  static readonly TRIPLE = 500;
+  static readonly TETRIS = 800;
+  static readonly SOFT_DROP = 1;
+  static readonly HARD_DROP = 2;
+}

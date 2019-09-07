@@ -6,7 +6,7 @@ import {
   HostListener,
   NgZone
 } from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS, COLORS } from './constants';
+import { COLS, BLOCK_SIZE, ROWS, COLORS, Points } from './constants';
 import { Piece, IPiece } from './piece.component';
 import { PieceService } from './piece.service';
 
@@ -26,6 +26,7 @@ export class BoardComponent implements OnInit {
   piece: Piece;
   requestId: number;
   time = { start: 0, elapsed: 0, level: 1000 };
+  points = 0;
   moves = {
     ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
@@ -40,6 +41,10 @@ export class BoardComponent implements OnInit {
       let p: IPiece = this.moves[event.key](this.piece);
       if (this.pieceService.valid(p, this.board)) {
         this.piece.move(p);
+        if (event.key === 'ArrowDown') {
+          this.points += Points.SOFT_DROP;
+          console.log(this.points);
+        }
       }
     }
   }
@@ -112,12 +117,28 @@ export class BoardComponent implements OnInit {
   }
 
   clearLines() {
+    let lines = 0;
     this.board.forEach((row, y) => {
       if (row.every(value => value !== 0)) {
+        lines++;
         this.board.splice(y, 1);
         this.board.unshift(Array(COLS).fill(0));
       }
     });
+    this.setPoints(lines);
+  }
+
+  setPoints(lines: number) {
+    this.points +=
+      lines === 1
+        ? Points.SINGLE
+        : lines === 2
+        ? Points.DOUBLE
+        : lines === 3
+        ? Points.TRIPLE
+        : lines === 4
+        ? Points.TETRIS
+        : 0;
   }
 
   freeze() {
