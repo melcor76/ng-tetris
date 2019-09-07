@@ -71,6 +71,8 @@ export class BoardComponent implements OnInit {
       cancelAnimationFrame(this.requestId);
     }
 
+    // Loop outside of the Angular zone
+    // so the UI does not refresh after each cycle
     this.ngZone.runOutsideAngular(() => this.animate());
   }
 
@@ -78,7 +80,10 @@ export class BoardComponent implements OnInit {
     this.time.elapsed = now - this.time.start;
     if (this.time.elapsed > this.time.level) {
       this.time.start = now;
-      this.drop();
+      if (!this.drop()) {
+        this.gameOver();
+        return;
+      }
     }
     this.draw();
     this.requestId = requestAnimationFrame(this.animate.bind(this));
@@ -90,15 +95,20 @@ export class BoardComponent implements OnInit {
     this.drawBoard();
   }
 
-  drop() {
+  drop(): boolean {
     let p: IPiece = this.moves['ArrowDown'](this.piece);
     if (this.pieceService.valid(p, this.board)) {
       this.piece.move(p);
     } else {
       this.freeze();
       this.clearLines();
+      if (this.piece.y === 0) {
+        // Game over
+        return false;
+      }
       this.piece = new Piece(this.ctx);
     }
+    return true;
   }
 
   clearLines() {
@@ -129,6 +139,15 @@ export class BoardComponent implements OnInit {
         }
       });
     });
+  }
+
+  gameOver() {
+    cancelAnimationFrame(this.requestId);
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(1, 3, 8, 1.2);
+    this.ctx.font = '1px Arial';
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillText('GAME OVER', 1.8, 4);
   }
 
   getEmptyBoard(): number[][] {
