@@ -3,8 +3,7 @@ import {
   ViewChild,
   ElementRef,
   OnInit,
-  HostListener,
-  NgZone
+  HostListener
 } from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS, COLORS, Points } from './constants';
 import { Piece, IPiece } from './piece.component';
@@ -13,6 +12,7 @@ import { PieceService } from './piece.service';
 @Component({
   selector: 'game-board',
   template: `
+    <p>Score: {{ points }}</p>
     <canvas #board class="game-board"></canvas>
     <button (click)="play()" class="play-button">Play</button>
   `
@@ -43,13 +43,12 @@ export class BoardComponent implements OnInit {
         this.piece.move(p);
         if (event.key === 'ArrowDown') {
           this.points += Points.SOFT_DROP;
-          console.log(this.points);
         }
       }
     }
   }
 
-  constructor(private pieceService: PieceService, private ngZone: NgZone) {}
+  constructor(private pieceService: PieceService) {}
 
   ngOnInit() {
     this.initBoard();
@@ -76,9 +75,7 @@ export class BoardComponent implements OnInit {
       cancelAnimationFrame(this.requestId);
     }
 
-    // Loop outside of the Angular zone
-    // so the UI does not refresh after each cycle
-    this.ngZone.runOutsideAngular(() => this.animate());
+    this.animate();
   }
 
   animate(now = 0) {
@@ -125,10 +122,12 @@ export class BoardComponent implements OnInit {
         this.board.unshift(Array(COLS).fill(0));
       }
     });
-    this.setPoints(lines);
+    if (lines > 0) {
+      this.linesCleared(lines);
+    }
   }
 
-  setPoints(lines: number) {
+  linesCleared(lines: number) {
     this.points +=
       lines === 1
         ? Points.SINGLE
