@@ -45,6 +45,14 @@ export class BoardComponent implements OnInit {
           this.points += Points.SOFT_DROP;
         }
       }
+    } else if (event.keyCode === 32) {
+      event.preventDefault();
+      let p: IPiece = this.moves['ArrowDown'](this.piece);
+      while (this.pieceService.valid(p, this.board)) {
+        this.points += Points.HARD_DROP;
+        this.piece.move(p);
+        p = this.moves['ArrowDown'](this.piece);
+      }
     }
   }
 
@@ -68,6 +76,7 @@ export class BoardComponent implements OnInit {
   play() {
     this.board = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
+    this.points = 0;
 
     this.time.start = performance.now();
 
