@@ -6,8 +6,8 @@ import {
   HostListener
 } from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS, COLORS, Points } from './constants';
-import { Piece, IPiece } from './piece.component';
-import { PieceService } from './piece.service';
+import { Tetromino, ITetromino } from './tetromino.component';
+import { GameService } from './game.service';
 
 @Component({
   selector: 'game-board',
@@ -23,23 +23,23 @@ export class BoardComponent implements OnInit {
   ctx: CanvasRenderingContext2D;
   playing = false;
   board: number[][];
-  piece: Piece;
+  piece: Tetromino;
   requestId: number;
   time = { start: 0, elapsed: 0, level: 1000 };
   points = 0;
   moves = {
-    ArrowLeft: (piece: Piece) => ({ ...piece, x: piece.x - 1 }),
-    ArrowRight: (piece: Piece) => ({ ...piece, x: piece.x + 1 }),
-    ArrowDown: (piece: Piece) => ({ ...piece, y: piece.y + 1 }),
-    ArrowUp: (piece: Piece) => this.pieceService.rotate(piece)
+    ArrowLeft: (piece: Tetromino) => ({ ...piece, x: piece.x - 1 }),
+    ArrowRight: (piece: Tetromino) => ({ ...piece, x: piece.x + 1 }),
+    ArrowDown: (piece: Tetromino) => ({ ...piece, y: piece.y + 1 }),
+    ArrowUp: (piece: Tetromino) => this.service.rotate(piece)
   };
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (this.moves[event.key]) {
       event.preventDefault();
-      let p: IPiece = this.moves[event.key](this.piece);
-      if (this.pieceService.valid(p, this.board)) {
+      let p: ITetromino = this.moves[event.key](this.piece);
+      if (this.service.valid(p, this.board)) {
         this.piece.move(p);
         if (event.key === 'ArrowDown') {
           this.points += Points.SOFT_DROP;
@@ -47,8 +47,8 @@ export class BoardComponent implements OnInit {
       }
     } else if (event.keyCode === 32) {
       event.preventDefault();
-      let p: IPiece = this.moves['ArrowDown'](this.piece);
-      while (this.pieceService.valid(p, this.board)) {
+      let p: ITetromino = this.moves['ArrowDown'](this.piece);
+      while (this.service.valid(p, this.board)) {
         this.points += Points.HARD_DROP;
         this.piece.move(p);
         p = this.moves['ArrowDown'](this.piece);
@@ -56,7 +56,7 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  constructor(private pieceService: PieceService) {}
+  constructor(private service: GameService) {}
 
   ngOnInit() {
     this.initBoard();
@@ -75,7 +75,7 @@ export class BoardComponent implements OnInit {
 
   play() {
     this.board = this.getEmptyBoard();
-    this.piece = new Piece(this.ctx);
+    this.piece = new Tetromino(this.ctx);
     this.points = 0;
 
     this.time.start = performance.now();
@@ -107,8 +107,8 @@ export class BoardComponent implements OnInit {
   }
 
   drop(): boolean {
-    let p: IPiece = this.moves['ArrowDown'](this.piece);
-    if (this.pieceService.valid(p, this.board)) {
+    let p: ITetromino = this.moves['ArrowDown'](this.piece);
+    if (this.service.valid(p, this.board)) {
       this.piece.move(p);
     } else {
       this.freeze();
@@ -117,7 +117,7 @@ export class BoardComponent implements OnInit {
         // Game over
         return false;
       }
-      this.piece = new Piece(this.ctx);
+      this.piece = new Tetromino(this.ctx);
     }
     return true;
   }
@@ -132,22 +132,9 @@ export class BoardComponent implements OnInit {
       }
     });
     if (lines > 0) {
-      this.linesCleared(lines);
+      this.points += this.service.getLinesClearedPoints(lines);
     }
-  }
-
-  linesCleared(lines: number) {
-    this.points +=
-      lines === 1
-        ? Points.SINGLE
-        : lines === 2
-        ? Points.DOUBLE
-        : lines === 3
-        ? Points.TRIPLE
-        : lines === 4
-        ? Points.TETRIS
-        : 0;
-  }
+  }  
 
   freeze() {
     this.piece.shape.forEach((row, y) => {

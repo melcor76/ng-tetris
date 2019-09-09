@@ -1,13 +1,13 @@
 import { COLORS, SHAPES } from './constants';
 
-export interface IPiece {
+export interface ITetromino {
   x: number;
   y: number;
   color: string;
   shape: number[][];
 }
 
-export class Piece implements IPiece {
+export class Tetromino implements ITetromino {
   x: number;
   y: number;
   color: string;
@@ -29,12 +29,14 @@ export class Piece implements IPiece {
     this.ctx.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
-        value && this.ctx.fillRect(this.x + x, this.y + y, 1, 1);
+        if (value > 0) {
+          this.ctx.fillRect(this.x + x, this.y + y, 1, 1);
+        }
       });
     });
   }
 
-  move(p: IPiece) {
+  move(p: ITetromino) {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;

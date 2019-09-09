@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Piece, IPiece } from './piece.component';
-import { COLS, ROWS } from './constants';
+import { ITetromino } from './tetromino.component';
+import { COLS, ROWS, Points } from './constants';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PieceService {
-  valid(p: IPiece, board: number[][]): boolean {
+export class GameService {
+  valid(p: ITetromino, board: number[][]): boolean {
     return p.shape.every((row, y) => {
       return row.every(
         (value, x) =>
@@ -19,8 +19,8 @@ export class PieceService {
     });
   }
 
-  rotate(piece: IPiece): Piece {
-    let p: Piece = JSON.parse(JSON.stringify(piece));
+  rotate(piece: ITetromino): ITetromino {
+    let p: ITetromino = JSON.parse(JSON.stringify(piece));
     for (let y = 0; y < p.shape.length; ++y) {
       for (let x = 0; x < y; ++x) {
         [p.shape[x][y], p.shape[y][x]] = [p.shape[y][x], p.shape[x][y]];
@@ -28,5 +28,17 @@ export class PieceService {
     }
     p.shape.forEach(row => row.reverse());
     return p;
+  }
+
+  getLinesClearedPoints(lines: number): number {
+    return lines === 1
+      ? Points.SINGLE
+      : lines === 2
+      ? Points.DOUBLE
+      : lines === 3
+      ? Points.TRIPLE
+      : lines === 4
+      ? Points.TETRIS
+      : 0;
   }
 }
