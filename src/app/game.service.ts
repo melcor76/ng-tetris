@@ -14,6 +14,7 @@ export class GameService {
           (p.x + x >= 0 &&
             p.x + x < COLS &&
             p.y + y < ROWS &&
+            board[p.y + y] &&
             board[p.y + y][p.x + x] === 0)
       );
     });
