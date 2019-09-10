@@ -31,6 +31,7 @@ export class BoardComponent implements OnInit {
     ArrowLeft: (piece: Tetromino) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Tetromino) => ({ ...piece, x: piece.x + 1 }),
     ArrowDown: (piece: Tetromino) => ({ ...piece, y: piece.y + 1 }),
+    ' ': (piece: Tetromino) => ({ ...piece, y: piece.y + 1 }),
     ArrowUp: (piece: Tetromino) => this.service.rotate(piece)
   };
 
@@ -39,19 +40,17 @@ export class BoardComponent implements OnInit {
     if (this.moves[event.key]) {
       event.preventDefault();
       let p: ITetromino = this.moves[event.key](this.piece);
-      if (this.service.valid(p, this.board)) {
+      if (event.key === ' ') {
+        while (this.service.valid(p, this.board)) {
+          this.points += Points.HARD_DROP;
+          this.piece.move(p);
+          p = this.moves[' '](this.piece);
+        }
+      } else if (this.service.valid(p, this.board)) {
         this.piece.move(p);
         if (event.key === 'ArrowDown') {
           this.points += Points.SOFT_DROP;
         }
-      }
-    } else if (event.keyCode === 32) {
-      event.preventDefault();
-      let p: ITetromino = this.moves['ArrowDown'](this.piece);
-      while (this.service.valid(p, this.board)) {
-        this.points += Points.HARD_DROP;
-        this.piece.move(p);
-        p = this.moves['ArrowDown'](this.piece);
       }
     }
   }
@@ -134,7 +133,7 @@ export class BoardComponent implements OnInit {
     if (lines > 0) {
       this.points += this.service.getLinesClearedPoints(lines);
     }
-  }  
+  }
 
   freeze() {
     this.piece.shape.forEach((row, y) => {
