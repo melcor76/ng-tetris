@@ -21,9 +21,8 @@ export class BoardComponent implements OnInit {
   @ViewChild('board', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
   ctx: CanvasRenderingContext2D;
-  playing = false;
   board: number[][];
-  piece: Tetromino;
+  tetromino: Tetromino;
   requestId: number;
   time = { start: 0, elapsed: 0, level: 1000 };
   points = 0;
@@ -38,20 +37,20 @@ export class BoardComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (this.moves[event.key]) {
       event.preventDefault();
-      let p: ITetromino = this.moves[event.key](this.piece);
+      let p: ITetromino = this.moves[event.key](this.tetromino);
       if (this.service.valid(p, this.board)) {
-        this.piece.move(p);
+        this.tetromino.move(p);
         if (event.key === 'ArrowDown') {
           this.points += Points.SOFT_DROP;
         }
       }
     } else if (event.keyCode === 32) {
       event.preventDefault();
-      let p: ITetromino = this.moves['ArrowDown'](this.piece);
+      let p: ITetromino = this.moves['ArrowDown'](this.tetromino);
       while (this.service.valid(p, this.board)) {
         this.points += Points.HARD_DROP;
-        this.piece.move(p);
-        p = this.moves['ArrowDown'](this.piece);
+        this.tetromino.move(p);
+        p = this.moves['ArrowDown'](this.tetromino);
       }
     }
   }
@@ -75,7 +74,7 @@ export class BoardComponent implements OnInit {
 
   play() {
     this.board = this.getEmptyBoard();
-    this.piece = new Tetromino(this.ctx);
+    this.tetromino = new Tetromino(this.ctx);
     this.points = 0;
 
     this.time.start = performance.now();
@@ -102,22 +101,22 @@ export class BoardComponent implements OnInit {
 
   draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.piece.draw();
+    this.tetromino.draw();
     this.drawBoard();
   }
 
   drop(): boolean {
-    let p: ITetromino = this.moves['ArrowDown'](this.piece);
+    let p: ITetromino = this.moves['ArrowDown'](this.tetromino);
     if (this.service.valid(p, this.board)) {
-      this.piece.move(p);
+      this.tetromino.move(p);
     } else {
       this.freeze();
       this.clearLines();
-      if (this.piece.y === 0) {
+      if (this.tetromino.y === 0) {
         // Game over
         return false;
       }
-      this.piece = new Tetromino(this.ctx);
+      this.tetromino = new Tetromino(this.ctx);
     }
     return true;
   }
@@ -137,10 +136,10 @@ export class BoardComponent implements OnInit {
   }  
 
   freeze() {
-    this.piece.shape.forEach((row, y) => {
+    this.tetromino.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
-          this.board[y + this.piece.y][x + this.piece.x] = value;
+          this.board[y + this.tetromino.y][x + this.tetromino.x] = value;
         }
       });
     });
