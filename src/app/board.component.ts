@@ -5,18 +5,33 @@ import {
   OnInit,
   HostListener
 } from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS, COLORS, Points, LINES_PER_LEVEL, Level } from './constants';
+import {
+  COLS,
+  BLOCK_SIZE,
+  ROWS,
+  COLORS,
+  Points,
+  LINES_PER_LEVEL,
+  Level
+} from './constants';
 import { Tetromino, ITetromino } from './tetromino.component';
 import { GameService } from './game.service';
 
 @Component({
   selector: 'game-board',
   template: `
-    <p>Score: {{ points }}</p>
-    <p>Lines: {{ lines }}</p>
-    <p>Level: {{ level }}</p>
-    <canvas #board class="game-board"></canvas>
-    <button (click)="play()" class="play-button">Play</button>
+    <div class="grid">
+      <canvas #board class="game-board"></canvas>
+      <div class="right-column">
+        <div>
+          <h1>TETRIS</h1>
+          <p>Score: {{ points }}</p>
+          <p>Lines: {{ lines }}</p>
+          <p>Level: {{ level }}</p>
+        </div>
+        <button (click)="play()" class="play-button">Play</button>
+      </div>
+    </div>
   `
 })
 export class BoardComponent implements OnInit {

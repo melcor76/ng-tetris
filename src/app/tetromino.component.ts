@@ -22,7 +22,7 @@ export class Tetromino implements ITetromino {
     this.shape = SHAPES[typeId];
     this.color = COLORS[typeId];
     this.x = 4;
-    this.y = -1;
+    this.y = 0;
   }
 
   draw() {
