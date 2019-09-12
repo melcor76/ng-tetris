@@ -19,20 +19,7 @@ import { GameService } from './game.service';
 
 @Component({
   selector: 'game-board',
-  template: `
-    <div class="grid">
-      <canvas #board class="game-board"></canvas>
-      <div class="right-column">
-        <div>
-          <h1>TETRIS</h1>
-          <p>Score: {{ points }}</p>
-          <p>Lines: {{ lines }}</p>
-          <p>Level: {{ level }}</p>
-        </div>
-        <button (click)="play()" class="play-button">Play</button>
-      </div>
-    </div>
-  `
+  templateUrl: 'board.component.html'
 })
 export class BoardComponent implements OnInit {
   @ViewChild('board', { static: true })
