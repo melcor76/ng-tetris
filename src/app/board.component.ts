@@ -5,7 +5,7 @@ import {
   OnInit,
   HostListener
 } from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS, COLORS, Points } from './constants';
+import { COLS, BLOCK_SIZE, ROWS, COLORS, Points, LINES_PER_LEVEL, Level } from './constants';
 import { Tetromino, ITetromino } from './tetromino.component';
 import { GameService } from './game.service';
 
@@ -13,6 +13,8 @@ import { GameService } from './game.service';
   selector: 'game-board',
   template: `
     <p>Score: {{ points }}</p>
+    <p>Lines: {{ lines }}</p>
+    <p>Level: {{ level }}</p>
     <canvas #board class="game-board"></canvas>
     <button (click)="play()" class="play-button">Play</button>
   `
@@ -25,7 +27,9 @@ export class BoardComponent implements OnInit {
   tetromino: Tetromino;
   requestId: number;
   time = { start: 0, elapsed: 0, level: 1000 };
-  points = 0;
+  points: number;
+  lines: number;
+  level: number;
   moves = {
     ArrowLeft: (piece: Tetromino) => ({ ...piece, x: piece.x - 1 }),
     ArrowRight: (piece: Tetromino) => ({ ...piece, x: piece.x + 1 }),
@@ -58,6 +62,7 @@ export class BoardComponent implements OnInit {
 
   ngOnInit() {
     this.initBoard();
+    this.resetGame();
   }
 
   initBoard() {
@@ -72,17 +77,24 @@ export class BoardComponent implements OnInit {
   }
 
   play() {
-    this.board = this.getEmptyBoard();
+    this.resetGame();
     this.tetromino = new Tetromino(this.ctx);
-    this.points = 0;
-
     this.time.start = performance.now();
 
+    // If we have an old game running a game then cancel the old
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
     }
 
     this.animate();
+  }
+
+  resetGame() {
+    this.points = 0;
+    this.lines = 0;
+    this.level = 0;
+    this.board = this.getEmptyBoard();
+    this.time.level = Level[this.level];
   }
 
   animate(now = 0) {
@@ -130,7 +142,13 @@ export class BoardComponent implements OnInit {
       }
     });
     if (lines > 0) {
-      this.points += this.service.getLinesClearedPoints(lines);
+      this.points += this.service.getLinesClearedPoints(lines, this.level);
+      this.lines += lines;
+      if (this.lines >= LINES_PER_LEVEL) {
+        this.level++;
+        this.lines -= LINES_PER_LEVEL;
+        this.time.level = Level[this.level];
+      }
     }
   }
 

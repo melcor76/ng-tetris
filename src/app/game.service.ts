@@ -31,8 +31,8 @@ export class GameService {
     return p;
   }
 
-  getLinesClearedPoints(lines: number): number {
-    return lines === 1
+  getLinesClearedPoints(lines: number, level: number): number {
+    const lineClearPoints = lines === 1
       ? Points.SINGLE
       : lines === 2
       ? Points.DOUBLE
@@ -41,5 +41,7 @@ export class GameService {
       : lines === 4
       ? Points.TETRIS
       : 0;
+
+      return (level + 1) * lineClearPoints;
   }
 }
