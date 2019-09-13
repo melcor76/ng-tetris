@@ -36,6 +36,17 @@ export class Tetromino implements ITetromino {
     });
   }
 
+  drawNext(ctxNext: CanvasRenderingContext2D) {
+    ctxNext.fillStyle = this.color;
+    this.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          ctxNext.fillRect(x, y, 1, 1);
+        }
+      });
+    });
+  }
+
   move(p: ITetromino) {
     this.x = p.x;
     this.y = p.y;

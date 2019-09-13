@@ -25,9 +25,13 @@ import { GameService } from './game.service';
 export class BoardComponent implements OnInit {
   @ViewChild('board', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('next', { static: true })
+  canvasNext: ElementRef<HTMLCanvasElement>;
   ctx: CanvasRenderingContext2D;
+  ctxNext: CanvasRenderingContext2D;
   board: number[][];
   tetromino: Tetromino;
+  next: Tetromino;
   requestId: number;
   time = { start: 0, elapsed: 0, level: 1000 };
   points: number;
@@ -69,6 +73,7 @@ export class BoardComponent implements OnInit {
 
   ngOnInit() {
     this.initBoard();
+    this.initNext();
     this.resetGame();
   }
 
@@ -83,9 +88,21 @@ export class BoardComponent implements OnInit {
     this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
   }
 
+  initNext() {
+    this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
+
+    // Calculate size of canvas from constants.
+    this.ctxNext.canvas.width = 4 * BLOCK_SIZE;
+    this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
+
+    this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+  }
+
   play() {
     this.resetGame();
+    this.next = new Tetromino(this.ctx);
     this.tetromino = new Tetromino(this.ctx);
+    this.next.drawNext(this.ctxNext);
     this.time.start = performance.now();
 
     // If we have an old game running a game then cancel the old
@@ -134,7 +151,10 @@ export class BoardComponent implements OnInit {
         // Game over
         return false;
       }
-      this.tetromino = new Tetromino(this.ctx);
+      this.tetromino = this.next;
+      this.next = new Tetromino(this.ctx);      
+      this.ctxNext.clearRect(0, 0, this.ctxNext.canvas.width, this.ctxNext.canvas.height);
+      this.next.drawNext(this.ctxNext);      
     }
     return true;
   }
