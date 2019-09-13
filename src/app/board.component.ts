@@ -34,28 +34,30 @@ export class BoardComponent implements OnInit {
   lines: number;
   level: number;
   moves = {
-    [KEY.LEFT]: (piece: Tetromino) => ({ ...piece, x: piece.x - 1 }),
-    [KEY.RIGHT]: (piece: Tetromino) => ({ ...piece, x: piece.x + 1 }),
-    [KEY.DOWN]: (piece: Tetromino) => ({ ...piece, y: piece.y + 1 }),
-    [KEY.SPACE]: (piece: Tetromino) => ({ ...piece, y: piece.y + 1 }),
-    [KEY.UP]: (piece: Tetromino) => this.service.rotate(piece)
+    [KEY.LEFT]:  (t: Tetromino) => ({ ...t, x: t.x - 1 }),
+    [KEY.RIGHT]: (t: Tetromino) => ({ ...t, x: t.x + 1 }),
+    [KEY.DOWN]:  (t: Tetromino) => ({ ...t, y: t.y + 1 }),
+    [KEY.SPACE]: (t: Tetromino) => ({ ...t, y: t.y + 1 }),
+    [KEY.UP]:    (t: Tetromino) => this.service.rotate(t)
   };
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode === KEY.ESC) {
-      this.gameOver();      
+      this.gameOver();
     } else if (this.moves[event.keyCode]) {
       event.preventDefault();
-      let p: ITetromino = this.moves[event.keyCode](this.tetromino);
+      // Get new state
+      let t: ITetromino = this.moves[event.keyCode](this.tetromino);
       if (event.keyCode === KEY.SPACE) {
-        while (this.service.valid(p, this.board)) {
+        // Hard drop
+        while (this.service.valid(t, this.board)) {
           this.points += POINTS.HARD_DROP;
-          this.tetromino.move(p);
-          p = this.moves[KEY.DOWN](this.tetromino);
+          this.tetromino.move(t);
+          t = this.moves[KEY.DOWN](this.tetromino);
         }
-      } else if (this.service.valid(p, this.board)) {
-        this.tetromino.move(p);
+      } else if (this.service.valid(t, this.board)) {
+        this.tetromino.move(t);
         if (event.keyCode === KEY.DOWN) {
           this.points += POINTS.SOFT_DROP;
         }
