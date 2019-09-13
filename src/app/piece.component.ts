@@ -1,13 +1,13 @@
 import { COLORS, SHAPES } from './constants';
 
-export interface ITetromino {
+export interface IPiece {
   x: number;
   y: number;
   color: string;
   shape: number[][];
 }
 
-export class Tetromino implements ITetromino {
+export class Piece implements IPiece {
   x: number;
   y: number;
   color: string;
@@ -48,7 +48,7 @@ export class Tetromino implements ITetromino {
     });
   }
 
-  move(p: ITetromino) {
+  move(p: IPiece) {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;

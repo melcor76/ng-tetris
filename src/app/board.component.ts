@@ -15,7 +15,7 @@ import {
   POINTS,
   KEY
 } from './constants';
-import { Tetromino, ITetromino } from './tetromino.component';
+import { Piece, IPiece } from './piece.component';
 import { GameService } from './game.service';
 
 @Component({
@@ -30,19 +30,19 @@ export class BoardComponent implements OnInit {
   ctx: CanvasRenderingContext2D;
   ctxNext: CanvasRenderingContext2D;
   board: number[][];
-  tetromino: Tetromino;
-  next: Tetromino;
+  piece: Piece;
+  next: Piece;
   requestId: number;
   time: { start: number; elapsed: number; level: number };
   points: number;
   lines: number;
   level: number;
   moves = {
-    [KEY.LEFT]: (t: ITetromino): ITetromino => ({ ...t, x: t.x - 1 }),
-    [KEY.RIGHT]: (t: ITetromino): ITetromino => ({ ...t, x: t.x + 1 }),
-    [KEY.DOWN]: (t: ITetromino): ITetromino => ({ ...t, y: t.y + 1 }),
-    [KEY.SPACE]: (t: ITetromino): ITetromino => ({ ...t, y: t.y + 1 }),
-    [KEY.UP]: (t: ITetromino): ITetromino => this.service.rotate(t)
+    [KEY.LEFT]: (p: IPiece): IPiece => ({ ...p, x: p.x - 1 }),
+    [KEY.RIGHT]: (p: IPiece): IPiece => ({ ...p, x: p.x + 1 }),
+    [KEY.DOWN]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
+    [KEY.SPACE]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
+    [KEY.UP]: (p: IPiece): IPiece => this.service.rotate(p)
   };
 
   @HostListener('window:keydown', ['$event'])
@@ -52,16 +52,16 @@ export class BoardComponent implements OnInit {
     } else if (this.moves[event.keyCode]) {
       event.preventDefault();
       // Get new state
-      let t = this.moves[event.keyCode](this.tetromino);
+      let p = this.moves[event.keyCode](this.piece);
       if (event.keyCode === KEY.SPACE) {
         // Hard drop
-        while (this.service.valid(t, this.board)) {
+        while (this.service.valid(p, this.board)) {
           this.points += POINTS.HARD_DROP;
-          this.tetromino.move(t);
-          t = this.moves[KEY.DOWN](this.tetromino);
+          this.piece.move(p);
+          p = this.moves[KEY.DOWN](this.piece);
         }
-      } else if (this.service.valid(t, this.board)) {
-        this.tetromino.move(t);
+      } else if (this.service.valid(p, this.board)) {
+        this.piece.move(p);
         if (event.keyCode === KEY.DOWN) {
           this.points += POINTS.SOFT_DROP;
         }
@@ -100,8 +100,8 @@ export class BoardComponent implements OnInit {
 
   play() {
     this.resetGame();
-    this.next = new Tetromino(this.ctx);
-    this.tetromino = new Tetromino(this.ctx);
+    this.next = new Piece(this.ctx);
+    this.piece = new Piece(this.ctx);
     this.next.drawNext(this.ctxNext);
     this.time.start = performance.now();
 
@@ -136,23 +136,23 @@ export class BoardComponent implements OnInit {
 
   draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.tetromino.draw();
+    this.piece.draw();
     this.drawBoard();
   }
 
   drop(): boolean {
-    let t = this.moves[KEY.DOWN](this.tetromino);
-    if (this.service.valid(t, this.board)) {
-      this.tetromino.move(t);
+    let p = this.moves[KEY.DOWN](this.piece);
+    if (this.service.valid(p, this.board)) {
+      this.piece.move(p);
     } else {
       this.freeze();
       this.clearLines();
-      if (this.tetromino.y === 0) {
+      if (this.piece.y === 0) {
         // Game over
         return false;
       }
-      this.tetromino = this.next;
-      this.next = new Tetromino(this.ctx);
+      this.piece = this.next;
+      this.next = new Piece(this.ctx);
       this.next.drawNext(this.ctxNext);
     }
     return true;
@@ -179,10 +179,10 @@ export class BoardComponent implements OnInit {
   }
 
   freeze() {
-    this.tetromino.shape.forEach((row, y) => {
+    this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
-          this.board[y + this.tetromino.y][x + this.tetromino.x] = value;
+          this.board[y + this.piece.y][x + this.piece.x] = value;
         }
       });
     });
