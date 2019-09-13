@@ -23,7 +23,17 @@ export const SHAPES = [
   [[7, 7, 0], [0, 7, 7], [0, 0, 0]]
 ];
 
-export class Points {
+export class KEY {
+  static readonly ESC = 27;
+  static readonly SPACE = 32;
+  static readonly LEFT = 37;
+  static readonly UP = 38;
+  static readonly RIGHT = 39;
+  static readonly DOWN = 40;
+
+}
+
+export class POINTS {
   static readonly SINGLE = 100;
   static readonly DOUBLE = 300;
   static readonly TRIPLE = 500;
@@ -32,7 +42,7 @@ export class Points {
   static readonly HARD_DROP = 2;
 }
 
-export class Level {
+export class LEVEL {
   static readonly 0 = 800;
   static readonly 1 = 720;
   static readonly 2 = 630;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ITetromino } from './tetromino.component';
-import { COLS, ROWS, Points } from './constants';
+import { COLS, ROWS, POINTS } from './constants';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +33,13 @@ export class GameService {
 
   getLinesClearedPoints(lines: number, level: number): number {
     const lineClearPoints = lines === 1
-      ? Points.SINGLE
+      ? POINTS.SINGLE
       : lines === 2
-      ? Points.DOUBLE
+      ? POINTS.DOUBLE
       : lines === 3
-      ? Points.TRIPLE
+      ? POINTS.TRIPLE
       : lines === 4
-      ? Points.TETRIS
+      ? POINTS.TETRIS
       : 0;
 
       return (level + 1) * lineClearPoints;
