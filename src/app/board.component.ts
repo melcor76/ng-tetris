@@ -33,16 +33,16 @@ export class BoardComponent implements OnInit {
   tetromino: Tetromino;
   next: Tetromino;
   requestId: number;
-  time = { start: 0, elapsed: 0, level: 1000 };
+  time: { start: number; elapsed: number; level: number };
   points: number;
   lines: number;
   level: number;
   moves = {
-    [KEY.LEFT]:  (t: Tetromino) => ({ ...t, x: t.x - 1 }),
-    [KEY.RIGHT]: (t: Tetromino) => ({ ...t, x: t.x + 1 }),
-    [KEY.DOWN]:  (t: Tetromino) => ({ ...t, y: t.y + 1 }),
-    [KEY.SPACE]: (t: Tetromino) => ({ ...t, y: t.y + 1 }),
-    [KEY.UP]:    (t: Tetromino) => this.service.rotate(t)
+    [KEY.LEFT]: (t: ITetromino): ITetromino => ({ ...t, x: t.x - 1 }),
+    [KEY.RIGHT]: (t: ITetromino): ITetromino => ({ ...t, x: t.x + 1 }),
+    [KEY.DOWN]: (t: ITetromino): ITetromino => ({ ...t, y: t.y + 1 }),
+    [KEY.SPACE]: (t: ITetromino): ITetromino => ({ ...t, y: t.y + 1 }),
+    [KEY.UP]: (t: ITetromino): ITetromino => this.service.rotate(t)
   };
 
   @HostListener('window:keydown', ['$event'])
@@ -52,7 +52,7 @@ export class BoardComponent implements OnInit {
     } else if (this.moves[event.keyCode]) {
       event.preventDefault();
       // Get new state
-      let t: ITetromino = this.moves[event.keyCode](this.tetromino);
+      let t = this.moves[event.keyCode](this.tetromino);
       if (event.keyCode === KEY.SPACE) {
         // Hard drop
         while (this.service.valid(t, this.board)) {
@@ -118,7 +118,7 @@ export class BoardComponent implements OnInit {
     this.lines = 0;
     this.level = 0;
     this.board = this.getEmptyBoard();
-    this.time.level = LEVEL[this.level];
+    this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
   }
 
   animate(now = 0) {
@@ -141,9 +141,9 @@ export class BoardComponent implements OnInit {
   }
 
   drop(): boolean {
-    let p: ITetromino = this.moves[KEY.DOWN](this.tetromino);
-    if (this.service.valid(p, this.board)) {
-      this.tetromino.move(p);
+    let t = this.moves[KEY.DOWN](this.tetromino);
+    if (this.service.valid(t, this.board)) {
+      this.tetromino.move(t);
     } else {
       this.freeze();
       this.clearLines();
@@ -152,9 +152,8 @@ export class BoardComponent implements OnInit {
         return false;
       }
       this.tetromino = this.next;
-      this.next = new Tetromino(this.ctx);      
-      this.ctxNext.clearRect(0, 0, this.ctxNext.canvas.width, this.ctxNext.canvas.height);
-      this.next.drawNext(this.ctxNext);      
+      this.next = new Tetromino(this.ctx);
+      this.next.drawNext(this.ctxNext);
     }
     return true;
   }
