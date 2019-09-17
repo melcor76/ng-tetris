@@ -12,9 +12,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Todo
 
-- Show points on board on line clear.
-- Upload to Netlify and link from readme.
+- Show what are control keys.
 - Highscore.
 - Colors and shapes should not need empty first.
-- Still some for-for loops.
-- Services?
+- Show points on board on line clear
+- Pause
+
