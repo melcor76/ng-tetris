@@ -33,6 +33,8 @@ export class BoardComponent implements OnInit {
   piece: Piece;
   next: Piece;
   requestId: number;
+  paused: boolean;
+  gameStarted: boolean;
   time: { start: number; elapsed: number; level: number };
   points: number;
   lines: number;
@@ -99,6 +101,7 @@ export class BoardComponent implements OnInit {
   }
 
   play() {
+    this.gameStarted = true;
     this.resetGame();
     this.next = new Piece(this.ctx);
     this.piece = new Piece(this.ctx);
@@ -119,6 +122,7 @@ export class BoardComponent implements OnInit {
     this.level = 0;
     this.board = this.getEmptyBoard();
     this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
+    this.paused = false;
   }
 
   animate(now = 0) {
@@ -199,7 +203,23 @@ export class BoardComponent implements OnInit {
     });
   }
 
+  pause() {
+    if (this.gameStarted) {
+      if (this.paused) {
+        this.animate();
+      } else {
+        this.ctx.font = '1px Arial';
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillText('GAME PAUSED', 1.4, 4);
+        cancelAnimationFrame(this.requestId);
+      }
+
+      this.paused = !this.paused;
+    }
+  }
+
   gameOver() {
+    this.gameStarted = false;
     cancelAnimationFrame(this.requestId);
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(1, 3, 8, 1.2);

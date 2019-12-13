@@ -8,6 +8,28 @@
             <p>Level: {{ level }}</p>
             <canvas #next class="next"></canvas>
         </div>
-        <button (click)="play()" class="play-button">Play</button>
+        <div class="button-container">
+            <button
+                (click)="play()"
+                class="play-button button"
+                *ngIf="!gameStarted"
+            >
+                Play
+            </button>
+            <button
+                (click)="gameOver()"
+                class="reset-button button"
+                *ngIf="gameStarted"
+            >
+                Reset
+            </button>
+            <button
+                (click)="pause()"
+                class="pause-button button"
+                [class.button-disabled]="!gameStarted"
+            >
+                Pause
+            </button>
+        </div>
     </div>
 </div>
