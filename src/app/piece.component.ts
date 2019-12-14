@@ -51,10 +51,10 @@ export class Piece implements IPiece {
       });
     });
 
+    ctxNext.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
-          ctxNext.fillStyle = this.color;
           ctxNext.fillRect(x + .025, y + .025, 1-.025, 1 -.025);
         }
       });
