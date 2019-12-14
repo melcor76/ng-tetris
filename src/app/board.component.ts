@@ -92,6 +92,8 @@ export class BoardComponent implements OnInit {
     this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
 
     // Calculate size of canvas from constants.
+    // The + 2 is to allow for space to add the drop shadow to
+    // the "next piece"
     this.ctxNext.canvas.width = 4 * BLOCK_SIZE + 2;
     this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
 
