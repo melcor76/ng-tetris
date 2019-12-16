@@ -37,6 +37,7 @@ export class BoardComponent implements OnInit {
   requestId: number;
   time: { start: number; elapsed: number; level: number };
   points: number;
+  highScore: number;
   lines: number;
   level: number;
   moves = {
@@ -77,6 +78,7 @@ export class BoardComponent implements OnInit {
     this.initBoard();
     this.initNext();
     this.resetGame();
+    this.highScore = 0;
   }
 
   initBoard() {
@@ -236,6 +238,7 @@ export class BoardComponent implements OnInit {
 
   gameOver() {
     cancelAnimationFrame(this.requestId);
+    this.highScore = this.points > this.highScore ? this.points : this.highScore;
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(1, 3, 8, 1.2);
     this.ctx.font = '1px Arial';
