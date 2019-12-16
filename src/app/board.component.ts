@@ -98,7 +98,9 @@ export class BoardComponent implements OnInit {
     this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
 
     // Calculate size of canvas from constants.
-    this.ctxNext.canvas.width = 4 * BLOCK_SIZE;
+    // The + 2 is to allow for space to add the drop shadow to
+    // the "next piece"
+    this.ctxNext.canvas.width = 4 * BLOCK_SIZE + 2;
     this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
 
     this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
@@ -127,6 +129,7 @@ export class BoardComponent implements OnInit {
     this.board = this.getEmptyBoard();
     this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
     this.paused = false;
+    this.addOutlines();
   }
 
   animate(now = 0) {
@@ -227,6 +230,18 @@ export class BoardComponent implements OnInit {
     this.ctx.fillRect(x, y, 1 , .05);
     this.ctx.fillRect(x, y, .95, .1);
   }
+  
+  private addOutlines() {
+    for(let index = 1; index < COLS; index++) {
+      this.ctx.fillStyle = 'black';
+      this.ctx.fillRect(index, 0, .025, this.ctx.canvas.height);
+    }
+
+    for(let index = 1; index < ROWS; index++) {
+      this.ctx.fillStyle = 'black';
+      this.ctx.fillRect(0, index, this.ctx.canvas.width, .025);
+    }
+  }
 
   drawBoard() {
     this.board.forEach((row, y) => {
@@ -238,6 +253,7 @@ export class BoardComponent implements OnInit {
         }
       });
     });
+    this.addOutlines();
   }
 
   pause() {

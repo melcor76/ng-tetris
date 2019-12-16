@@ -61,6 +61,11 @@ export class Piece implements IPiece {
     ctx.fillRect(x, y, .95, .1);
   }
 
+  private addNextShadow(ctx: CanvasRenderingContext2D, x: number, y: number): void {
+   ctx.fillStyle = 'black';
+    ctx.fillRect(x, y, 1.025, 1.025);
+  }
+
   draw() {
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -77,6 +82,15 @@ export class Piece implements IPiece {
 
   drawNext(ctxNext: CanvasRenderingContext2D) {
     ctxNext.clearRect(0, 0, ctxNext.canvas.width, ctxNext.canvas.height);
+    this.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.addNextShadow(ctxNext, x, y);
+        }
+      });
+    });
+
+    ctxNext.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
