@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
   template: `
     <game-board></game-board>
   `,
-  styles: []
 })
 export class AppComponent {
   title = 'ng-tetris';
