@@ -19,6 +19,7 @@ import {
 } from './constants';
 import { Piece, IPiece } from './piece.component';
 import { GameService } from './game.service';
+import { Zoundfx } from 'ng-zzfx';
 
 @Component({
   selector: 'game-board',
@@ -49,6 +50,7 @@ export class BoardComponent implements OnInit {
     [KEY.SPACE]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
     [KEY.UP]: (p: IPiece): IPiece => this.service.rotate(p)
   };
+  playSoundFn: Function;
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -78,9 +80,14 @@ export class BoardComponent implements OnInit {
 
   ngOnInit() {
     this.initBoard();
+    this.initSound();
     this.initNext();
     this.resetGame();
     this.highScore = 0;
+  }
+
+  initSound() {
+    this.playSoundFn = Zoundfx.start(0.2);
   }
 
   initBoard() {
@@ -162,6 +169,7 @@ export class BoardComponent implements OnInit {
         // Game over
         return false;
       }
+      this.playSoundFn([ , , 224,.02,.02,.08,1,1.7,-13.9 , , , , , ,6.7]);
       this.piece = this.next;
       this.next = new Piece(this.ctx);
       this.next.drawNext(this.ctxNext);
