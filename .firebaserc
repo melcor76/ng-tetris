@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "tetris-pvp": {
+      "hosting": {
+        "ng-tetris": [
+          "tetris-pvp"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "tetris-pvp"
+  }
+}

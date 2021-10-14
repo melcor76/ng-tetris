@@ -2,7 +2,8 @@
     <canvas #board class="game-board"></canvas>
     <div class="right-column">
         <div>
-            <h1>TETRIS</h1>
+            <h2>TETRIS</h2>
+            <p style="color: blue;">{{jogador}}</p>
             <p>Score: {{ points }}</p>
             <p>Lines: {{ lines }}</p>
             <p>Level: {{ level }}</p>
@@ -11,26 +12,19 @@
             <p>Next Block:</p>
             <canvas #next class="next"></canvas>
         </div>
+
         <div class="button-container">
-            <button
-                (click)="play()"
-                class="play-button button"
-                *ngIf="!gameStarted"
-            >
+            <button (click)="play()" class="play-button button" *ngIf="!gameStarted">
                 Play
             </button>
-            <button
-                (click)="gameOver()"
-                class="reset-button button"
-                *ngIf="gameStarted"
-            >
+            <button (click)="gameOver()" class="reset-button button" *ngIf="gameStarted">
                 Reset
             </button>
-            <button
-                (click)="pause()"
-                class="pause-button button"
-                [class.button-disabled]="!gameStarted"
-            >
+
+        </div>
+        <div class="button-container">
+
+            <button (click)="pause()" class="pause-button button" [class.button-disabled]="!gameStarted">
                 Pause
             </button>
         </div>

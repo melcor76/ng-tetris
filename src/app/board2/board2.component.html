@@ -1,0 +1,16 @@
+<div class="grid" >
+    <canvas #board class="game-board"></canvas>
+    <div class="right-column">
+        <div>
+            <h2>TETRIS</h2>
+            <p style="color: brown;" *ngIf="jogo !=null">{{jogo.name}}</p>
+            <p>Score: {{ points }}</p>
+            <p>Lines: {{ lines }}</p>
+            <p>Level: {{ level }}</p>
+            <p>High Score:</p>
+            <p>{{ highScore }}</p>
+            <canvas #next class="next"></canvas>
+
+        </div>
+    </div>
+</div>

@@ -1,24 +1,24 @@
 import { Component, ViewChild, ElementRef, OnInit, HostListener } from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS, COLORS, COLORSLIGHTER, LINES_PER_LEVEL, LEVEL, POINTS, KEY, COLORSDARKER } from './constants';
-
-import { Piece, IPiece } from './piece.component';
-import { GameService } from './game.service';
+import { COLS, BLOCK_SIZE, ROWS, COLORS, COLORSLIGHTER, LINES_PER_LEVEL, LEVEL, POINTS, KEY, COLORSDARKER } from '../constants';
+import { Piece, IPiece } from '../piece.component';
+import { GameService } from '../game.service';
 import { Zoundfx } from 'ng-zzfx';
-import { FirebaseService } from './firebase.service';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
+import { FirebaseService } from '../firebase.service';
 
 @Component({
-  selector: 'game-board',
-  templateUrl: 'board.component.html'
+  selector: 'app-board2',
+  templateUrl: './board2.component.html',
+  styleUrls: ['./board2.component.css']
 })
-export class BoardComponent implements OnInit {
+export class Board2Component implements OnInit {
   @ViewChild('board', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('next', { static: true })
   canvasNext: ElementRef<HTMLCanvasElement>;
   ctx: CanvasRenderingContext2D;
   ctxNext: CanvasRenderingContext2D;
-  board
+  board: number[][];
   piece: Piece;
   next: Piece;
   requestId: number;
@@ -38,43 +38,11 @@ export class BoardComponent implements OnInit {
   };
   playSoundFn: Function;
 
-  tecla() {
-    var tecla = Number((<HTMLSelectElement>document.getElementById("tecla")).value)
-    this.keyEvent_notkey(tecla)
-  }
-
-  keyEvent_notkey(event: any) {
-
-    if (event === KEY.ESC) {
-      this.gameOver();
-    } else if (this.moves[event]) {
-
-
-      // Get new state
-      let p = this.moves[event](this.piece);
-      if (event === KEY.SPACE) {
-        // Hard drop
-        while (this.service.valid(p, this.board)) {
-          this.points += POINTS.HARD_DROP;
-          this.piece.move(p);
-          p = this.moves[KEY.DOWN](this.piece);
-        }
-      } else if (this.service.valid(p, this.board)) {
-        this.piece.move(p);
-        if (event === KEY.DOWN) {
-          this.points += POINTS.SOFT_DROP;
-        }
-      }
-    }
-  }
-
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-
     if (event.keyCode === KEY.ESC) {
       this.gameOver();
     } else if (this.moves[event.keyCode]) {
-
       event.preventDefault();
       // Get new state
       let p = this.moves[event.keyCode](this.piece);
@@ -96,14 +64,54 @@ export class BoardComponent implements OnInit {
 
   constructor(private service: GameService, private firebase: FirebaseService, private auth: AuthService) { }
 
-  jogador
+  jogo = null
+  boardzero = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
   ngOnInit() {
     this.initBoard();
     this.initSound();
     this.initNext();
     this.resetGame();
     this.highScore = 0;
-    this.jogador = this.auth.getNickname()
+
+    if (this.firebase.getHost() != this.auth.getNickname()) {
+      this.firebase.firestoregetdata(this.firebase.getsala(), 'host').subscribe(doc => this.updatedata(doc.payload.data()))
+    } else {
+      this.firebase.firestoregetdata(this.firebase.getsala(), 'guest').subscribe(doc => this.updatedata(doc.payload.data()))
+    }
+  }
+
+  updatedata(data) {
+    this.board = this.boardzero
+
+    this.initBoard();
+    this.drawBoard()
+    this.resetGame();
+
+    this.jogo = data
+    console.log(this.jogo);
+    this.points = this.jogo.points
+    this.lines = this.jogo.lines
+    this.level = this.jogo.level
+    this.board = JSON.parse(this.jogo.board)
+    console.log(this.board);
+    console.log("---------");
+    this.drawBoard()
+
+  }
+
+  drawBoardzero() {
+    this.boardzero.forEach((row, y) => {
+      console.log(row, y);
+
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = COLORS[value];
+          this.ctx.fillRect(x, y, 1, 1);
+          this.add3D(x, y, value);
+        }
+      });
+    });
+    this.addOutlines();
   }
 
   initSound() {
@@ -179,7 +187,6 @@ export class BoardComponent implements OnInit {
   }
 
   drop(): boolean {
-
     let p = this.moves[KEY.DOWN](this.piece);
     if (this.service.valid(p, this.board)) {
       this.piece.move(p);
@@ -199,42 +206,23 @@ export class BoardComponent implements OnInit {
   }
 
   clearLines() {
-    //firebase
-    
-
-
-    let line_aux = 0;
+    let lines = 0;
     this.board.forEach((row, y) => {
       if (row.every(value => value !== 0)) {
-        line_aux++;
+        lines++;
         this.board.splice(y, 1);
         this.board.unshift(Array(COLS).fill(0));
       }
     });
-    if (line_aux > 0) {
-      this.points += this.service.getLinesClearedPoints(line_aux, this.level);
-      this.lines += line_aux;
+    if (lines > 0) {
+      this.points += this.service.getLinesClearedPoints(lines, this.level);
+      this.lines += lines;
       if (this.lines >= LINES_PER_LEVEL) {
         this.level++;
         this.lines -= LINES_PER_LEVEL;
         this.time.level = LEVEL[this.level];
       }
     }
-
-    let data = {
-      board: JSON.stringify(this.board),
-      points: this.points,
-      lines: this.lines,
-      level: this.level,
-      highscore: this.highScore
-    }
-    var aux = JSON.stringify(this.board)
-    if (this.firebase.getHost() == this.auth.getNickname()) {
-      this.firebase.firestoreupdatedata(this.firebase.getsala(), 'host', data)
-    } else {
-      this.firebase.firestoreupdatedata(this.firebase.getsala(), 'guest', data)
-    }
-
   }
 
   freeze() {
@@ -292,13 +280,14 @@ export class BoardComponent implements OnInit {
   }
 
   drawBoard() {
-
     this.board.forEach((row, y) => {
+      console.log(row, y);
+
       row.forEach((value, x) => {
         if (value > 0) {
           this.ctx.fillStyle = COLORS[value];
           this.ctx.fillRect(x, y, 1, 1);
-          //this.add3D(x, y, value);
+          this.add3D(x, y, value);
         }
       });
     });
@@ -334,4 +323,5 @@ export class BoardComponent implements OnInit {
   getEmptyBoard(): number[][] {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   }
+
 }

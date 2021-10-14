@@ -74,7 +74,7 @@ export class Piece implements IPiece {
           const currentX = this.x + x;
           const currentY = this.y + y;
           this.ctx.fillRect(currentX, currentY, 1, 1);
-          this.add3D(this.ctx, currentX, currentY);
+          //this.add3D(this.ctx, currentX, currentY);
         }
       });
     });
@@ -98,7 +98,7 @@ export class Piece implements IPiece {
           const currentX = x + .025;
           const currentY = y + .025;
           ctxNext.fillRect(currentX, currentY, 1-.025, 1 -.025);
-          this.add3D(ctxNext, currentX, currentY);
+          //this.add3D(ctxNext, currentX, currentY);
         }
       });
     });

@@ -1,0 +1,23 @@
+<div *ngIf="carregado" class="container">
+    <div *ngIf="dadosjogo.gamestart == 0;else jogo">
+        <br>
+        <p>Jogadores: {{sala[0].payload.doc.data().jogadores}}</p>
+        <hr>
+        <h4>Aguardando outro jogador</h4>
+        <hr>
+        <h5>Novas opções em breve</h5>
+
+    </div>
+    <ng-template #jogo>
+        <div class="">
+            <div class="row">
+                <div class="col-sm-6 ">
+                    <game-board></game-board>
+                </div>
+                <div class="col-sm-6">
+                    <app-board2></app-board2>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

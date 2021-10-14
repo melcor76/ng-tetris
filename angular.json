@@ -75,6 +75,10 @@
           "options": {
             "browserTarget": "ng-tetris:build"
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }
