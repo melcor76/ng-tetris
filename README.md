@@ -2,6 +2,8 @@
 
 Tetris game in Angular. [Play it now!](https://focused-mestorf-930f82.netlify.com/)
 
+Read the [blog about making the game](https://medium.com/angular-in-depth/game-development-tetris-in-angular-64ef96ce56f7?sk=66ab4b5774919de28eecd3a2662557a4) 
+
 ![tetris picture](src/assets/share-image-large.png)
 
 ## Development server
